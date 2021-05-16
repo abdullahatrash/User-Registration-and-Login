@@ -1,7 +1,40 @@
-import React from 'react'
+import React, {useEffect, useState } from 'react'
 import { LockClosedIcon } from '@heroicons/react/solid'
+import { useDispatch, useSelector } from 'react-redux';
+import { userActions } from '../redux/actions/auth.action';
 
 const SignupPage = () => {
+
+const [User, setUser] = useState({
+    firstName: 'bbb',
+    lastName: 'aabbba',
+    username: 'bbbbb',
+    password: '123456'
+});
+const [submitted, setSubmitted] = useState(false);
+const registering = useSelector(state => state.register.registration);
+
+    // reset login status
+    useEffect(() => {
+      dispatch(userActions.logout());
+  },);
+
+const dispatch = useDispatch();
+function handleChange(e) {
+  const { name, value } = e.target;
+  setUser(prev => ({ ...prev, [name]: value }));
+}
+
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+      setSubmitted(true);
+        if (User.firstName && User.lastName && User.username && User.password) {
+            dispatch(userActions.register(User));
+        }
+  }
+
     return (
         <div>
             <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -20,26 +53,34 @@ const SignupPage = () => {
             </a>
           </p>
         </div>
-        <form className="mt-8 space-y-6" action="#" method="POST">
-          <input type="hidden" name="remember" defaultValue="true" />
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <input type="hidden" name="remember" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="pt-1 mt-1">
             <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">
                         First name
                       </label>
                       <input
+                        value={User.firstName} onChange={handleChange}
                         type="text"
                         name="first_name"
                         id="first_name"
                         autoComplete="given-name"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                        className={'mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md'
+                         +(submitted && !User.firstName ? ' is-invalid' : '') }
                       />
+                       {submitted && !User.firstName &&
+                        <div className="invalid-feedback">First Name is required</div>
+                      }
+                    
             </div>
             <div className="pt-1 mt-1">
             <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">
                         Last name
                       </label>
                       <input
+                        value={User.lastName}
+                        onChange={handleChange}
                         type="text"
                         name="last_name"
                         id="last_name"
@@ -48,14 +89,16 @@ const SignupPage = () => {
                       />
             </div>
             <div className="pt-1 mt-1">
-            <label htmlFor="email_address" className="block text-sm font-medium text-gray-700">
-                        Email address
+            <label htmlFor="user-name" className="block text-sm font-medium text-gray-700">
+                        User name
                       </label>
                       <input
+                        value={User.username}
+                        onChange={handleChange}
                         type="text"
-                        name="email_address"
-                        id="email_address"
-                        autoComplete="email"
+                        name="user-name"
+                        id="user-name"
+                        autoComplete="user-name"
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                       />
             </div>
@@ -63,14 +106,15 @@ const SignupPage = () => {
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                         Password
                       </label>
-                      <input
+               <input
+                value={User.password}
+                onChange={handleChange}
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
                 required
                 className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                
               />
             </div>
           </div>
@@ -103,6 +147,7 @@ const SignupPage = () => {
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                 <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
               </span>
+              {registering }
               Sign up
             </button>
           </div>

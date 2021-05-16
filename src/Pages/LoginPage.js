@@ -1,7 +1,41 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { LockClosedIcon } from '@heroicons/react/solid'
+import {useDispatch, useSelector} from "react-redux"
+import { userActions } from '../redux/actions/auth.action';
+import { Link, useLocation } from 'react-router-dom';
 
 const LoginPage = () => {
+  const [inputs, setInputs] = useState({
+    username: '',
+    password: ''
+});
+const [submitted, setSubmitted] = useState(false);
+const { username, password } = inputs;
+const loggingIn = useSelector(state => state.auth.loggingIn);
+
+const location = useLocation();
+  const dispatch = useDispatch();
+
+    // reset login status
+    useEffect(() => { 
+     dispatch(userActions.logout()); 
+  }, [dispatch]);
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setInputs(inputs => ({ ...inputs, [name]: value }));
+}
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    setSubmitted(true);
+    if (username && password) {
+        // get return url from location state or default to home page
+        const { from } = location.state || { from: { pathname: "/" } };
+        dispatch(userActions.login(username, password, from));
+    }
+}
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -14,33 +48,40 @@ const LoginPage = () => {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
-            <a href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
               start your 14-day free trial
-            </a>
+            </Link>
           </p>
         </div>
-        <form className="mt-8 space-y-6" action="#" method="POST">
+        <form className="mt-8 space-y-6" action="#" method="POST"  onClick={handleSubmit}>
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email-address" className="sr-only">
-                Email address
+              <label htmlFor="user-name" className="sr-only">
+                User name
               </label>
               <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
+              value={username}
+              onChange={handleChange}
+                id="user-name"
+                name="username"
+                type="text"
+                autoComplete="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                placeholder="User name"
               />
+               {submitted && !username &&
+                        <div className="invalid-feedback">Username is required</div>
+                    }
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
               <input
+              value={password}
+              onChange={handleChange}
                 id="password"
                 name="password"
                 type="password"
@@ -49,6 +90,9 @@ const LoginPage = () => {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
               />
+              {submitted && !password &&
+                        <div className="invalid-feedback">Password is required</div>
+                    }
             </div>
           </div>
 
@@ -74,12 +118,14 @@ const LoginPage = () => {
 
           <div>
             <button
+           
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                 <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
               </span>
+              {loggingIn}
               Sign in
             </button>
           </div>
