@@ -5,11 +5,11 @@ import { userActions } from '../redux/actions/auth.action';
 
 const SignupPage = () => {
 
-const [User, setUser] = useState({
-    firstName: 'bbb',
-    lastName: 'aabbba',
-    username: 'bbbbb',
-    password: '123456'
+const [user, setUser] = useState({
+    firstName: '',
+    lastName: '',
+    username: '',
+    password: ''
 });
 const [submitted, setSubmitted] = useState(false);
 const registering = useSelector(state => state.register.registration);
@@ -20,18 +20,17 @@ const registering = useSelector(state => state.register.registration);
   },);
 
 const dispatch = useDispatch();
+
 function handleChange(e) {
   const { name, value } = e.target;
-  setUser(prev => ({ ...prev, [name]: value }));
+  setUser(user => ({ ...user, [name]: value }));
 }
 
-
-
-  const handleSubmit = (e) => {
+  function handleSubmit(e)  {
     e.preventDefault();
       setSubmitted(true);
-        if (User.firstName && User.lastName && User.username && User.password) {
-            dispatch(userActions.register(User));
+        if (user.firstName && user.lastName && user.username && user.password) {
+            dispatch(userActions.register(user));
         }
   }
 
@@ -57,19 +56,19 @@ function handleChange(e) {
           <input type="hidden" name="remember" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="pt-1 mt-1">
-            <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="firstname" className="block text-sm font-medium text-gray-700">
                         First name
                       </label>
                       <input
-                        value={User.firstName} onChange={handleChange}
+                        value={user.firstName} onChange={handleChange}
                         type="text"
-                        name="first_name"
+                        name="firstname"
                         id="first_name"
                         autoComplete="given-name"
                         className={'mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md'
-                         +(submitted && !User.firstName ? ' is-invalid' : '') }
+                         +(submitted && !user.firstName ? ' is-invalid' : '') }
                       />
-                       {submitted && !User.firstName &&
+                       {submitted && !user.firstName &&
                         <div className="invalid-feedback">First Name is required</div>
                       }
                     
@@ -79,7 +78,7 @@ function handleChange(e) {
                         Last name
                       </label>
                       <input
-                        value={User.lastName}
+                        value={user.lastName}
                         onChange={handleChange}
                         type="text"
                         name="last_name"
@@ -93,7 +92,7 @@ function handleChange(e) {
                         User name
                       </label>
                       <input
-                        value={User.username}
+                        value={user.username}
                         onChange={handleChange}
                         type="text"
                         name="user-name"
@@ -107,7 +106,7 @@ function handleChange(e) {
                         Password
                       </label>
                <input
-                value={User.password}
+                value={user.password}
                 onChange={handleChange}
                 id="password"
                 name="password"
@@ -147,7 +146,7 @@ function handleChange(e) {
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                 <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
               </span>
-              {registering }
+              {registering && <svg className="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24"></svg>}
               Sign up
             </button>
           </div>

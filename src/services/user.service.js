@@ -31,7 +31,7 @@ function logout() {
     localStorage.removeItem('user');
 }
 
-function getAll() {
+async function getAll() {
     const requestOptions = {
         method: 'GET',
         headers: authHeader()
@@ -40,7 +40,7 @@ function getAll() {
     return fetch(`/users`, requestOptions).then(handleResponse);
 }
 
-function getById(id) {
+async function getById(id) {
     const requestOptions = {
         method: 'GET',
         headers: authHeader()
@@ -49,7 +49,7 @@ function getById(id) {
     return fetch(`/users/${id}`, requestOptions).then(handleResponse);
 }
 
-function register(user) {
+async function register(user) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -59,7 +59,7 @@ function register(user) {
     return fetch(`/users/register`, requestOptions).then(handleResponse);
 }
 
-function update(user) {
+async function update(user) {
     const requestOptions = {
         method: 'PUT',
         headers: { ...authHeader(), 'Content-Type': 'application/json' },
@@ -70,7 +70,7 @@ function update(user) {
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
-function _delete(id) {
+async function _delete(id) {
     const requestOptions = {
         method: 'DELETE',
         headers: authHeader()

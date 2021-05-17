@@ -1,6 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {Link} from "react-router-dom"
+import { useDispatch, useSelector } from 'react-redux';
+import { userActions } from '../redux/actions/auth.action';
+
 const HomePage = () => {
+
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.auth.user);
+
+  useEffect(() => {
+    dispatch(userActions.getAll());
+}, [dispatch]);
+
+
+
     return (
         <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
         <div className="relative py-3 sm:max-w-xl sm:mx-auto">
@@ -13,7 +26,7 @@ const HomePage = () => {
               <div className="divide-y divide-gray-200">
                 <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
                   <p>React + Redux - User Registration and Login Tutorial & Example</p>
-                  <h1 className="pt-0 text-xl  ">Hii Abdullah!</h1>
+                  <h1 className="pt-0 text-xl  ">Hii {user.firstName}!</h1>
                   <h2 className="pt-0 text-xl">You're logged in with React!!</h2>
                   <h3>All registered users:</h3>
                   <ul className="list-disc space-y-2">
@@ -22,7 +35,7 @@ const HomePage = () => {
                           <li className="flex items-start">
                           <span className="h-6 flex items-center sm:h-7">
                             <svg className="flex-shrink-0 h-5 w-5 text-cyan-500" viewBox="0 0 20 20" fill="currentColor">
-                              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
                           </span>
                           <p className="ml-2">
