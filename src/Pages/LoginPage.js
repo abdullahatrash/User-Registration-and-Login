@@ -24,6 +24,7 @@ const location = useLocation();
   function handleChange(e) {
     const { name, value } = e.target;
     setInputs(inputs => ({ ...inputs, [name]: value }));
+    console.log(value)
 }
 
   function handleSubmit(e) {
@@ -49,7 +50,7 @@ const location = useLocation();
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
             <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
-              start your 14-day free trial
+            start your 14-day free trial
             </Link>
           </p>
         </div>
@@ -61,8 +62,8 @@ const location = useLocation();
                 User name
               </label>
               <input
-              value={username}
-              onChange={handleChange}
+                value={username}
+                onChange={handleChange}
                 id="user-name"
                 name="username"
                 type="text"
@@ -72,8 +73,8 @@ const location = useLocation();
                 placeholder="User name"
               />
                {submitted && !username &&
-                        <div className="invalid-feedback">Username is required</div>
-                    }
+                <div className="invalid-feedback">Username is required</div>
+               }
             </div>
             <div>
               <label htmlFor="password" className="sr-only">

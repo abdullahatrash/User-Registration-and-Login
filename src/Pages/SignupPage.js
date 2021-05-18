@@ -2,6 +2,7 @@ import React, {useEffect, useState } from 'react'
 import { LockClosedIcon } from '@heroicons/react/solid'
 import { useDispatch, useSelector } from 'react-redux';
 import { userActions } from '../redux/actions/auth.action';
+import { Link } from 'react-router-dom';
 
 const SignupPage = () => {
 
@@ -11,11 +12,15 @@ const [user, setUser] = useState({
     username: '',
     password: ''
 });
+
+const {firstName, username, lastName, password } = user;
+
 const [submitted, setSubmitted] = useState(false);
+
 const registering = useSelector(state => state.register.registration);
 
-    // reset login status
-    useEffect(() => {
+// reset login status
+  useEffect(() => {
       dispatch(userActions.logout());
   },);
 
@@ -24,12 +29,13 @@ const dispatch = useDispatch();
 function handleChange(e) {
   const { name, value } = e.target;
   setUser(user => ({ ...user, [name]: value }));
+  console.log(value)
 }
 
   function handleSubmit(e)  {
     e.preventDefault();
       setSubmitted(true);
-        if (user.firstName && user.lastName && user.username && user.password) {
+        if (firstName && lastName && username && password) {
             dispatch(userActions.register(user));
         }
   }
@@ -46,30 +52,32 @@ function handleChange(e) {
           />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign up and create account</h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Or{' '}
+            <Link to ="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
               Login if you already have an account
-            </a>
+            </Link>
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <input type="hidden" name="remember" />
+        <form className="mt-8 space-y-6" action="#" method="POST" onSubmit={handleSubmit}>
+          <input type="hidden" name="remember" defaultValue="true"/>
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="pt-1 mt-1">
             <label htmlFor="firstname" className="block text-sm font-medium text-gray-700">
                         First name
                       </label>
                       <input
-                        value={user.firstName} onChange={handleChange}
+                        value={firstName}
+                        onChange={handleChange}
                         type="text"
                         name="firstname"
                         id="first_name"
                         autoComplete="given-name"
                         className={'mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md'
-                         +(submitted && !user.firstName ? ' is-invalid' : '') }
+                         +(submitted && !firstName ? ' is-invalid' : '') }
                       />
-                       {submitted && !user.firstName &&
-                        <div className="invalid-feedback">First Name is required</div>
+                      {
+                       submitted && !firstName &&
+                       <div className="invalid-feedback">First Name is required</div>
                       }
                     
             </div>
@@ -78,7 +86,7 @@ function handleChange(e) {
                         Last name
                       </label>
                       <input
-                        value={user.lastName}
+                        value={lastName}
                         onChange={handleChange}
                         type="text"
                         name="last_name"
@@ -92,7 +100,7 @@ function handleChange(e) {
                         User name
                       </label>
                       <input
-                        value={user.username}
+                        value={username}
                         onChange={handleChange}
                         type="text"
                         name="user-name"
@@ -106,7 +114,7 @@ function handleChange(e) {
                         Password
                       </label>
                <input
-                value={user.password}
+                value={password}
                 onChange={handleChange}
                 id="password"
                 name="password"
