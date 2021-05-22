@@ -24,7 +24,7 @@ const location = useLocation();
   function handleChange(e) {
     const { name, value } = e.target;
     setInputs(inputs => ({ ...inputs, [name]: value }));
-    console.log(value)
+   
 }
 
   function handleSubmit(e) {
@@ -38,7 +38,7 @@ const location = useLocation();
     }
 }
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <img
@@ -55,7 +55,7 @@ const location = useLocation();
           </p>
         </div>
         <form className="mt-8 space-y-6" action="#" method="POST"  onClick={handleSubmit}>
-          <input type="hidden" name="remember" defaultValue="true" />
+        <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="user-name" className="sr-only">
@@ -69,7 +69,9 @@ const location = useLocation();
                 type="text"
                 autoComplete="text"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className={'appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'
+              + (submitted && !username ? ' bg-gray-100 invalid:bg-red-200' : '')
+              }
                 placeholder="User name"
               />
                {submitted && !username &&
@@ -88,7 +90,9 @@ const location = useLocation();
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className={'appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm' 
+                + (submitted && !password ? ' bg-gray-100 invalid:bg-red-200' : '')
+                }
                 placeholder="Password"
               />
               {submitted && !password &&

@@ -7,13 +7,15 @@ import { Link } from 'react-router-dom';
 const SignupPage = () => {
 
 const [user, setUser] = useState({
-    firstName: '',
-    lastName: '',
+   
     username: '',
-    password: ''
+    password: '',
+    firstName:"",
+    lastName: ""
 });
 
-const {firstName, username, lastName, password } = user;
+
+const { username, password, firstName, lastName } = user;
 
 const [submitted, setSubmitted] = useState(false);
 
@@ -28,9 +30,10 @@ const dispatch = useDispatch();
 
 function handleChange(e) {
   const { name, value } = e.target;
-  setUser(user => ({ ...user, [name]: value }));
-  console.log(value)
+  setUser({ ...user, [name]: value });
+ 
 }
+
 
   function handleSubmit(e)  {
     e.preventDefault();
@@ -41,8 +44,8 @@ function handleChange(e) {
   }
 
     return (
-        <div>
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <img
@@ -62,18 +65,18 @@ function handleChange(e) {
           <input type="hidden" name="remember" defaultValue="true"/>
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="pt-1 mt-1">
-            <label htmlFor="firstname" className="block text-sm font-medium text-gray-700">
-                        First name
+            <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">
+                      First name
                       </label>
                       <input
                         value={firstName}
                         onChange={handleChange}
+                        name="firstName"
                         type="text"
-                        name="firstname"
-                        id="first_name"
-                        autoComplete="given-name"
+                        id="first-name"
+                        autoComplete="text"
                         className={'mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md'
-                         +(submitted && !firstName ? ' is-invalid' : '') }
+                        +(submitted && !firstName ? ' is-invalid' : '') }
                       />
                       {
                        submitted && !firstName &&
@@ -82,16 +85,16 @@ function handleChange(e) {
                     
             </div>
             <div className="pt-1 mt-1">
-            <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">
                         Last name
                       </label>
                       <input
                         value={lastName}
                         onChange={handleChange}
                         type="text"
-                        name="last_name"
-                        id="last_name"
-                        autoComplete="family-name"
+                        name="lastName"
+                        id="last-name"
+                        autoComplete="text"
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                       />
             </div>
@@ -103,7 +106,7 @@ function handleChange(e) {
                         value={username}
                         onChange={handleChange}
                         type="text"
-                        name="user-name"
+                        name="username"
                         id="user-name"
                         autoComplete="user-name"
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -126,11 +129,11 @@ function handleChange(e) {
             </div>
           </div>
 
+              
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <input
                 id="remember_me"
-                name="remember_me"
                 type="checkbox"
                 className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
               />
@@ -138,7 +141,7 @@ function handleChange(e) {
                 Remember me
               </label>
             </div>
-
+  
             <div className="text-sm">
               <a href="/" className="font-medium text-indigo-600 hover:text-indigo-500">
                 Cancel
@@ -154,14 +157,14 @@ function handleChange(e) {
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                 <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
               </span>
-              {registering && <svg className="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24"></svg>}
+              {registering && <span><svg className="animate-spin h-5 w-5 mr-3 ..." viewBox="0 0 24 24"></svg></span>}
               Sign up
             </button>
           </div>
         </form>
       </div>
     </div>
-        </div>
+       
     )
 }
 

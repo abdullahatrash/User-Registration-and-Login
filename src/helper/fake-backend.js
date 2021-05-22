@@ -1,130 +1,100 @@
-// The fake backend is used for running the tutorial example without a server api (backend-less). 
-// It monkey patches the fetch() function to intercept certain api requests 
-// and mimic the behaviour of a real api by managing data in browser local storage. 
-// Any requests that aren't intercepted get passed through to the real fetch() function.
-
 // array in local storage for registered users
 let users = JSON.parse(localStorage.getItem('users')) || [];
-
+    
 export function configureFakeBackend() {
-
     let realFetch = window.fetch;
-
-    window.fetch = function(url, opts) {
+    window.fetch = function (url, opts) {
+        const { method, headers } = opts;
+        const body = opts.body && JSON.parse(opts.body);
 
         return new Promise((resolve, reject) => {
-            
-              // wrap in timeout to simulate server api call
-         setTimeout(()=> {
+            // wrap in timeout to simulate server api call
+            setTimeout(handleRoute, 500);
 
-            // authenticate
-            if(url.endsWith('users/authenticate') && opts.method === 'POST') {
-                 // get parameters from post request
-                 let params = JSON.parse(opts.body);
-                 // find if any user matches login credentials
-                let filteredUsers = users.filter(user => {
-                    return user.username === params.username && user.password === params.password;
-                })
-                if(filteredUsers.length) {
-                // if login details are valid return user details and fake jwt token
-                let user = filteredUsers[0];
-                let responseJson = {
+            function handleRoute() {
+                switch (true) {
+                    case url.endsWith('/users/authenticate') && method === 'POST':
+                        return authenticate();
+                    case url.endsWith('/users/register') && method === 'POST':
+                        return register();
+                    case url.endsWith('/users') && method === 'GET':
+                        return getUsers();
+                    case url.match(/\/users\/\d+$/) && method === 'DELETE':
+                        return deleteUser();
+                    default:
+                        // pass through any requests not handled above
+                        return realFetch(url, opts)
+                            .then(response => resolve(response))
+                            .catch(error => reject(error));
+                }
+            }
+
+            // route functions
+
+            function authenticate() {
+                const { username, password } = body;
+                const user = users.find(x => x.username === username && x.password === password);
+                if (!user) return error('Username or password is incorrect');
+                return ok({
                     id: user.id,
                     username: user.username,
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    token: "fake-jwt-token"
-                };
-                resolve({ok: true, text: () => Promise.resolve(JSON.stringify(responseJson)) });
-                } else {
-                    // return error
-                    reject('Username or Password is incorrect');
-                }
-                return;
-            }
-            // get users
-            if(url.endsWith('/users') && opts.method === "GET") {
-            // check for fake auth token in header and return users if valid, this security is implemented server side in a real application
-            if(opts.headers && opts.headers.Authorization  === 'Bearer fake-jwt-token') {
-                resolve({ok: true, text: () => Promise.resolve(JSON.stringify(users)) });
-            } else {
-                // return 401 not authorised if token is null or invalid
-                reject('Unauthorised')
+                    token: 'fake-jwt-token'
+                });
             }
 
-            return;
-
-            }
-
-             // get user by id
-
-             if (url.match(/\/users\/\d+$/) && opts.method === 'GET') {
-                if (opts.headers && opts.headers.Authorization === 'Bearer fake-jwt-token') {
-                    // find user by id in users array
-                    let urlParts = url.split("/");
-                    let id = parseInt(urlParts[urlParts.length - 1]);
-                    let matchedUsers = users.filter(user => { return user.id === id; });
-                    let user = matchedUsers.length ? matchedUsers[0] : null;
-
-                    // respond 200 OK with user
-                    resolve({ ok: true, text: () => JSON.stringify(user)});
-
-                } else {
-                    // return 401 not authorised if token is null or invalid
-                    reject('Unauthorised');
+            function register() {
+                const user = body;
+    
+                if (users.find(x => x.username === user.username)) {
+                    return error(`Username  ${user.username} is already taken`);
                 }
-
-                return;
-             }
-            // register user
-            if(url.endsWith('users/register') && opts.method === 'POST') {
-                // get new user object from post body 
-                let newUser = JSON.parse(opts.body);
-                // valdiation 
-                let duplicateUser = users.filter(user => {return user.username === newUser.username;}).length;
-                if(duplicateUser) {
-                    return ('UserName "' + newUser.username +'" is already taken')
-                }
-                // save new user 
-                newUser.id = users.length ? Math.max(...users.map(user => user.id)) + 1 : 1 ;
-                users.push(newUser);
+    
+                // assign user id and a few other properties then save
+                user.id = users.length ? Math.max(...users.map(x => x.id)) + 1 : 1;
+                users.push(user);
                 localStorage.setItem('users', JSON.stringify(users));
 
-                // respond 200 ok 
-
-                resolve({ok: true, text: () => Promise.resolve() });
-
-                return;
+                return ok();
             }
-            // delete user
-            if (url.match(/\/users\/\d+$/) && opts.method === 'DELETE') {
-            // check for fake auth token in header and return user if valid, this security is implemented server side in a real application
-            if (opts.headers && opts.headers.Authorization === 'Bearer fake-jwt-token') {
-                // find user by id in users array 
-                let urlParts = url.split('/');
-                let id = parseInt(urlParts[urlParts.length - 1]);
-                for(let i = 0; i < users.length; i++) {
-                    let user = users[i];
-                    if(user.id === id) {
-                        users.splice(i, 1);
-                        localStorage.setItem('users', JSON.stringify(users));
-                        break;
-                    }
-                }
-                 // respond 200 OK
-                 resolve({ ok: true, text: () => Promise.resolve() });
-            } else {
-                 // return 401 not authorised if token is null or invalid
-                 reject('Unauthorised');
-            }
-            return;
-            }
-            // pass through any requests not handled above
-            realFetch(url, opts).then(response => resolve(response));
-        }, 500);
+    
+            function getUsers() {
+                if (!isLoggedIn()) return unauthorized();
 
+                return ok(users);
+            }
+    
+            function deleteUser() {
+                if (!isLoggedIn()) return unauthorized();
+    
+                users = users.filter(x => x.id !== idFromUrl());
+                localStorage.setItem('users', JSON.stringify(users));
+                return ok();
+            }
+
+            // helper functions
+
+            function ok(body) {
+                resolve({ ok: true, text: () => Promise.resolve(JSON.stringify(body)) });
+            }
+
+            function unauthorized() {
+                resolve({ status: 401, text: () => Promise.resolve(JSON.stringify({ message: 'Unauthorized' })) });
+            }
+
+            function error(message) {
+                resolve({ status: 400, text: () => Promise.resolve(JSON.stringify({ message })) });
+            }
+
+            function isLoggedIn() {
+                return headers['Authorization'] === 'Bearer fake-jwt-token';
+            }
+    
+            function idFromUrl() {
+                const urlParts = url.split('/');
+                return parseInt(urlParts[urlParts.length - 1]);
+            }
         });
-
     }
-  
 }

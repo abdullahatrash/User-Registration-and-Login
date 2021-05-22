@@ -1,7 +1,7 @@
 import { LOGIN_FAIL, LOGIN_REQUEST, LOGIN_SUCCESS, LOG_OUT } from "../actionType"
 
 let user = JSON.parse(localStorage.getItem('user'));
-const initialState = user ? { loggedIn: false, user } : {};
+const initialState = user ? { loggedIn: true, user } : {};
 
 
 export const authReducer = (state = initialState, action) => {

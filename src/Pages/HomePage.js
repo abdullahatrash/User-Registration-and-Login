@@ -5,13 +5,18 @@ import { userActions } from '../redux/actions/auth.action';
 
 const HomePage = () => {
 
-  const dispatch = useDispatch();
+  
   const user = useSelector(state => state.auth.user);
+  const users = useSelector(state => state.users);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(userActions.getAll());
 }, [dispatch]);
 
+function handleDeleteUser(id) {
+  dispatch(userActions.delete(id));
+}
 
 
     return (
@@ -29,19 +34,25 @@ const HomePage = () => {
                   <h1 className="pt-0 text-xl  ">Hii {user.firstName}!</h1>
                   <h2 className="pt-0 text-xl">You're logged in with React!!</h2>
                   <h3>All registered users:</h3>
+                  {users.loading && <em>Loading users...</em>}
+                  {users.error && <span className="text-red-600">ERROR: {users.error}</span>}
                   <ul className="list-disc space-y-2">
                       {
-                          [...new Array(3)].map(()=>
-                          <li className="flex items-start">
+                          users.items?.map((user, index) =>
+                          <li className="flex items-start" key={user.id}>
                           <span className="h-6 flex items-center sm:h-7">
                             <svg className="flex-shrink-0 h-5 w-5 text-cyan-500" viewBox="0 0 20 20" fill="currentColor">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
                           </span>
                           <p className="ml-2">
-                            User Name 
+                          {user.firstName + ' ' + user.lastName}
                             <code className="text-sm font-bold text-gray-900">{' '}Apllication users</code>{' '} 
-                            <a href="./">Delete</a>
+                            {
+                                user.deleting ? <em> - Deleting...</em>
+                                : user.deleteError ? <span className="text-danger"> - ERROR: {user.deleteError}</span>
+                                : <span> - <a href onClick={() => handleDeleteUser(user.id)} className="text-blue-500">Delete</a></span>
+                            }
                           </p>
                         </li>
                           )
@@ -52,7 +63,7 @@ const HomePage = () => {
                 <div className="pt-6 text-base leading-6 font-bold sm:text-lg sm:leading-7">
                   <p>Do you want to logout :( ?</p>
                   <p>
-                      <Link to="./login">
+                      <Link to="/login">
                     <span className="text-cyan-600 hover:text-cyan-700"> Logout &rarr; </span>
                     </Link>
                   </p>

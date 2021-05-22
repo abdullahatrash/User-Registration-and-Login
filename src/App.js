@@ -37,16 +37,14 @@ function App() {
     <Router>
   
       <Switch>
-      <Route path="/signup">
-     <SignupPage/>
-     </Route>
-      <Route path="/login">
-     <LoginPage/>
-     </Route>
-      <PrivateRoute path="/">
-     <HomePage/>
-     </PrivateRoute>
+      <PrivateRoute exact path="/" component={HomePage} />
+    
+     <Route path="/login" component={LoginPage} />
+    
+      <Route path="/signup"  component={SignupPage} />
+  
      <Redirect from="*" to="/" />
+     
      </Switch>
    
     </Router>

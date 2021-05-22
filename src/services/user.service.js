@@ -1,4 +1,4 @@
-import { authHeader } from '../../src/helper/auth-header';
+import { authHeader } from '../helper/auth-header';
 
 export const userService = {
     login,
@@ -10,7 +10,7 @@ export const userService = {
     delete: _delete
 };
 
-async function login(username, password) {
+function login(username, password) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -22,6 +22,7 @@ async function login(username, password) {
         .then(user => {
             // store user details and jwt token in local storage to keep user logged in between page refreshes
             localStorage.setItem('user', JSON.stringify(user));
+
             return user;
         });
 }
@@ -31,7 +32,7 @@ function logout() {
     localStorage.removeItem('user');
 }
 
-async function getAll() {
+function getAll() {
     const requestOptions = {
         method: 'GET',
         headers: authHeader()
@@ -40,7 +41,7 @@ async function getAll() {
     return fetch(`/users`, requestOptions).then(handleResponse);
 }
 
-async function getById(id) {
+function getById(id) {
     const requestOptions = {
         method: 'GET',
         headers: authHeader()
@@ -49,7 +50,7 @@ async function getById(id) {
     return fetch(`/users/${id}`, requestOptions).then(handleResponse);
 }
 
-async function register(user) {
+function register(user) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -59,7 +60,7 @@ async function register(user) {
     return fetch(`/users/register`, requestOptions).then(handleResponse);
 }
 
-async function update(user) {
+function update(user) {
     const requestOptions = {
         method: 'PUT',
         headers: { ...authHeader(), 'Content-Type': 'application/json' },
@@ -70,7 +71,7 @@ async function update(user) {
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
-async function _delete(id) {
+function _delete(id) {
     const requestOptions = {
         method: 'DELETE',
         headers: authHeader()
@@ -86,7 +87,8 @@ function handleResponse(response) {
             if (response.status === 401) {
                 // auto logout if 401 response returned from api
                 logout();
-                // location.reload(true);
+                // eslint-disable-next-line no-restricted-globals
+                location.reload(true); 
             }
 
             const error = (data && data.message) || response.statusText;
